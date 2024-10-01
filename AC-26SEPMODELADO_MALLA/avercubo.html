@@ -24,16 +24,24 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 //necesitamos tambien crear el objeto, en este caso un cubo, con ayuda de BoxGeometry 
-//que recibe los vertices del objeto 
-const geometry = new THREE.BoxGeometry( 1, 1, 1 );
-//lo siguiente que recibir este objeto es el material que tendra en este caso 
-//MeshBasicMaterial y el color que tomara
-const material = new THREE.MeshBasicMaterial( { color: 0x550055 } );
-//lo siguiente que necesitamos es un objeto al cual ademas de añadirle 
-//la textura y el color podamos mover facilmente, para esto usamos Mesh
-const cube = new THREE.Mesh( geometry, material );
-//al usar scene.add lo que añadamos sera añadido al origen de la pagina
+const geometryCube = new THREE.BoxGeometry( 1, 1, 1 );
+const materialCube = new THREE.MeshBasicMaterial( { color: 0x550055 } );
+const cube = new THREE.Mesh( geometryCube, materialCube );
 scene.add( cube );
+
+// Crear una esfera
+const geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 );
+const materialSphere = new THREE.MeshBasicMaterial( { color: 0x005555 } );
+const sphere = new THREE.Mesh( geometrySphere, materialSphere );
+sphere.position.x = 2; // Mover la esfera a la derecha
+scene.add( sphere );
+
+// Crear un cilindro
+const geometryCylinder = new THREE.CylinderGeometry( 0.5, 0.5, 1, 32 );
+const materialCylinder = new THREE.MeshBasicMaterial( { color: 0x555500 } );
+const cylinder = new THREE.Mesh( geometryCylinder, materialCylinder );
+cylinder.position.x = -2; // Mover el cilindro a la izquierda
+scene.add( cylinder );
 
 // para evitar que la camara este dentro del objeto moveremos un poco la camara 
 camera.position.z = 5;
@@ -41,9 +49,10 @@ camera.position.z = 5;
 //lo siguiente que haremos sera una funcion para mover el cubo
 function animate() {
 	requestAnimationFrame( animate );
-	//al usar cube.rotation el cubo se movera usualmente a 60 fps el valor indicado
 	cube.rotation.x += 0.01;
 	cube.rotation.y += 0.01;
+	sphere.rotation.y += 0.01; // Rotar la esfera
+	cylinder.rotation.x += 0.01; // Rotar el cilindro
 
 	renderer.render( scene, camera );
 }
