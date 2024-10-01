@@ -13,46 +13,70 @@
 <script>
 //lo primero para hacer un proyecto en three js necesitamos una escena
 const scene = new THREE.Scene();
-//la camara PerspectiveCamera recibe: campo de vision(FOV) en grados 
-//radio de aspecto(4:3,1080*1920,etc), cercania y lejania
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-
-//para crear el renderizador necesitamos dar los valores en los que renderiza
-const renderer = new THREE.WebGLRenderer();
-//los parametros usados en este caso son el ancho y el alto de la pantalla del navegador
+const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.shadowMap.enabled = true; // Habilitar sombras
 document.body.appendChild( renderer.domElement );
 
-//necesitamos tambien crear el objeto, en este caso un cubo, con ayuda de BoxGeometry 
+// Crear un cubo
 const geometryCube = new THREE.BoxGeometry( 1, 1, 1 );
-const materialCube = new THREE.MeshBasicMaterial( { color: 0x550055 } );
+const materialCube = new THREE.MeshStandardMaterial( { color: 0x550055 } ); // Cambiar a MeshStandardMaterial
 const cube = new THREE.Mesh( geometryCube, materialCube );
+cube.castShadow = true; // El cubo puede proyectar sombras
 scene.add( cube );
 
 // Crear una esfera
 const geometrySphere = new THREE.SphereGeometry( 0.5, 32, 32 );
-const materialSphere = new THREE.MeshBasicMaterial( { color: 0x005555 } );
+const materialSphere = new THREE.MeshBasicMaterial( { color: 0x005555 } ); // Cambiar a MeshStandardMaterial
 const sphere = new THREE.Mesh( geometrySphere, materialSphere );
 sphere.position.x = 2; // Mover la esfera a la derecha
+sphere.castShadow = true; // La esfera puede proyectar sombras
 scene.add( sphere );
 
 // Crear un cilindro
 const geometryCylinder = new THREE.CylinderGeometry( 0.5, 0.5, 1, 32 );
-const materialCylinder = new THREE.MeshBasicMaterial( { color: 0x555500 } );
+const materialCylinder = new THREE.MeshStandardMaterial( { color: 0x555500 } ); // Cambiar a MeshStandardMaterial
 const cylinder = new THREE.Mesh( geometryCylinder, materialCylinder );
 cylinder.position.x = -2; // Mover el cilindro a la izquierda
+cylinder.castShadow = true; // El cilindro puede proyectar sombras
 scene.add( cylinder );
+
+// Agregar luz
+const light = new THREE.DirectionalLight( 0xffffff, 1 );
+light.position.set(5, 5, 5).normalize();
+light.castShadow = true; // La luz puede proyectar sombras
+scene.add(light);
+
+// Crear un plano para recibir sombras
+const planeGeometry = new THREE.PlaneGeometry( 500, 500 );
+const planeMaterial = new THREE.ShadowMaterial( { opacity: 0.5 } ); // Material para sombras
+const plane = new THREE.Mesh( planeGeometry, planeMaterial );
+plane.rotation.x = - Math.PI / 2; // Rotar el plano
+plane.position.y = -1; // Mover el plano hacia abajo
+plane.receiveShadow = true; // El plano puede recibir sombras
+scene.add( plane );
 
 // para evitar que la camara este dentro del objeto moveremos un poco la camara 
 camera.position.z = 5;
 
-//lo siguiente que haremos sera una funcion para mover el cubo
+// Función para generar velocidad y dirección aleatoria
+function getRandomSpeed() {
+    return (Math.random() - 0.5) * 0.05; // Velocidad aleatoria entre -0.025 y 0.025
+}
+
+// Inicializar velocidades aleatorias
+let cubeSpeedX = getRandomSpeed();
+let cubeSpeedY = getRandomSpeed();
+let sphereSpeedY = getRandomSpeed();
+let cylinderSpeedX = getRandomSpeed();
+
 function animate() {
 	requestAnimationFrame( animate );
-	cube.rotation.x += 0.01;
-	cube.rotation.y += 0.01;
-	sphere.rotation.y += 0.01; // Rotar la esfera
-	cylinder.rotation.x += 0.01; // Rotar el cilindro
+	cube.rotation.x += cubeSpeedX;
+	cube.rotation.y += cubeSpeedY;
+	sphere.rotation.y += sphereSpeedY;
+	cylinder.rotation.x += cylinderSpeedX;
 
 	renderer.render( scene, camera );
 }
