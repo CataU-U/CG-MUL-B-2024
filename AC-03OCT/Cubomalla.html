@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>MDN Games: Three.js demo</title>
+	<style>
+		body { margin: 0; padding: 0; font-size: 0; }
+		canvas { width: 100%; height: 100%; }
+	</style>
+</head>
+<body>
+<script src="three.min.js"></script>
+<script>
+
+//lo primero para hacer un proyecto en three js necesitamos una escena
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+document.body.appendChild( renderer.domElement );
+
+// Crear un cubo
+const geometryCube = new THREE.BoxGeometry( 1, 1, 1 );
+const materialCube = new THREE.MeshStandardMaterial( { color: 0x550055 } ); // Cambiar a MeshStandardMaterial
+const cube = new THREE.Mesh( geometryCube, materialCube );
+scene.add( cube );
+
+
+// Agregar luz
+const light = new THREE.DirectionalLight( 0xffffff, 1 );
+light.position.set(5, 5, 5).normalize();
+scene.add(light);
+
+// para evitar que la camara este dentro del objeto moveremos un poco la camara 
+camera.position.z = 5;
+
+// Función para generar velocidad y dirección aleatoria
+function getRandomSpeed() {
+    return (Math.random() - 0.5) * 0.05; // Velocidad aleatoria entre -0.025 y 0.025
+}
+
+// Inicializar velocidades aleatorias
+let cubeSpeedX = getRandomSpeed();
+let cubeSpeedY = getRandomSpeed();
+
+
+function animate() {
+	requestAnimationFrame( animate );
+	cube.rotation.x += cubeSpeedX;
+	cube.rotation.y += cubeSpeedY;
+
+	renderer.render( scene, camera );
+}
+
+animate();
+</script>
+</body>
+</html>
