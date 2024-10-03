@@ -1,52 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8">
-	<title>MDN Games: Three.js demo</title>
-	<style>
-		body { margin: 0; padding: 0; font-size: 0; }
-		canvas { width: 100%; height: 100%; }
-	</style>
+    <meta charset="utf-8">
+    <title>MDN Games: Three.js demo</title>
+    <style>
+        body { margin: 0; padding: 0; font-size: 0; }
+        canvas { width: 100%; height: 100%; }
+    </style>
 </head>
 <body>
 <script src="three.min.js"></script>
 <script src="OrbitControls.js"></script>
 
 <script>
-
-const controls = new OrbitControls( camera, renderer.domElement );
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
 const renderer = new THREE.WebGLRenderer();
-renderer.setSize( window.innerWidth, window.innerHeight );
-document.body.appendChild( renderer.domElement );
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-const geometryCube = new THREE.BoxGeometry( 1, 1, 1 );
-const materialCube = new THREE.MeshBasicMaterial( { wireframe:true } );
-const cube = new THREE.Mesh( geometryCube, materialCube );
-scene.add( cube );
+// Función para crear un cubo
+function createCube() {
+    const geometryCube = new THREE.BoxGeometry(1, 1, 1);
+    const materialCube = new THREE.MeshBasicMaterial({ wireframe: true });
+    const cube = new THREE.Mesh(geometryCube, materialCube);
+    
+    return cube;
+}
+
+// Generar un número aleatorio de cubos entre 1 y 5
+const numberOfCubes = Math.floor(Math.random() * 5) + 1; // Entre 1 y 5
+const spacing = 2; // Espacio entre los cubos
+for (let i = 0; i < numberOfCubes; i++) {
+    const cube = createCube();
+    cube.position.x = (i - (numberOfCubes - 1) / 2) * spacing; // Posicionar cubos uno al lado del otro
+    scene.add(cube);
+}
 
 camera.position.z = 5;
 
-
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 // Función para generar velocidad y dirección aleatoria
 function getRandomSpeed() {
-    return (Math.random() - 0.5) * 0.2; // Velocidad aleatoria entre -0.025 y 0.025
+    return (Math.random() - 0.5) * 0.02; // Velocidad aleatoria entre -0.01 y 0.01
 }
 
-// Inicializar velocidades aleatorias
-let cubeSpeedX = getRandomSpeed();
-let cubeSpeedY = getRandomSpeed();
 
-
+// Inicializar velocidades aleatorias para cada cubo
+const cubeSpeeds = Array.from({ length: numberOfCubes }, () => ({
+    x: getRandomSpeed(),
+    y: getRandomSpeed()
+}));
+renderer.domElement.addEventListener('mousemove', (event) => {
+    if (event.buttons === 4) { // 4 es el código para el botón del medio
+        controls.rotateLeft(event.movementX * 0.01);
+        controls.rotateUp(event.movementY * 0.01);
+    }
+});
 function animate() {
-	requestAnimationFrame( animate );
-	cube.rotation.x += cubeSpeedX;
-	cube.rotation.y += cubeSpeedY;
+    requestAnimationFrame(animate);
+            controls.update()
+    
+    // Rotar cada cubo
+    scene.children.forEach((cube, index) => {
+        if (cube instanceof THREE.Mesh) {
+            cube.rotation.x += cubeSpeeds[index].x;
+            cube.rotation.y += cubeSpeeds[index].y;
+        }
+    });
 
-	renderer.render( scene, camera );
+    renderer.render(scene, camera);
 }
 
 animate();
