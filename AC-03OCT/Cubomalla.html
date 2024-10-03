@@ -12,31 +12,25 @@
 <script src="three.min.js"></script>
 <script>
 
-//lo primero para hacer un proyecto en three js necesitamos una escena
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-// Crear un cubo
 const geometryCube = new THREE.BoxGeometry( 1, 1, 1 );
-const materialCube = new THREE.MeshStandardMaterial( { color: 0x550055 } ); // Cambiar a MeshStandardMaterial
+const materialCube = new THREE.MeshBasicMaterial( { wireframe:true } );
 const cube = new THREE.Mesh( geometryCube, materialCube );
 scene.add( cube );
 
-
-// Agregar luz
-const light = new THREE.DirectionalLight( 0xffffff, 1 );
-light.position.set(5, 5, 5).normalize();
-scene.add(light);
-
-// para evitar que la camara este dentro del objeto moveremos un poco la camara 
 camera.position.z = 5;
+
+
 
 // Función para generar velocidad y dirección aleatoria
 function getRandomSpeed() {
-    return (Math.random() - 0.5) * 0.05; // Velocidad aleatoria entre -0.025 y 0.025
+    return (Math.random() - 0.5) * 0.2; // Velocidad aleatoria entre -0.025 y 0.025
 }
 
 // Inicializar velocidades aleatorias
