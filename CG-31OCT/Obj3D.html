@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelo 3D de Blender en Three.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        // Configuración básica
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        
+        // Configurar renderer
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setClearColor(0x404040); // Color de fondo gris
+        document.body.appendChild(renderer.domElement);
+
+        // Configurar luces
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+        directionalLight.position.set(5, 5, 5);
+        scene.add(directionalLight);
+
+        // Posicionar cámara
+        camera.position.z = 5;
+
+        // Cargar modelo
+        const loader = new THREE.GLTFLoader();
+        loader.load(
+            'scene.gltf', // Asegúrate que el archivo esté en la misma carpeta
+            function (gltf) {
+                scene.add(gltf.scene);
+                console.log('Modelo cargado exitosamente');
+            },
+            function (xhr) {
+                console.log((xhr.loaded / xhr.total * 100) + '% cargado');
+            },
+            function (error) {
+                console.error('Error cargando el modelo:', error);
+            }
+        );
+
+        // Función de animación
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+
+        // Manejar redimensionamiento de ventana
+        window.addEventListener('resize', function() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // Iniciar animación
+        animate();
+    </script>
+</body>
+</html>
